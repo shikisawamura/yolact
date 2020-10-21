@@ -190,11 +190,9 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
         # After this, mask is of size [num_dets, h, w, 1]
         masks = masks[:num_dets_to_consider, :, :, None]
         img_gpu = (masks.sum(dim=0) >= 1).float().expand(-1, -1, 3).contiguous()
-    else:
-        img_gpu *= 0.5
-        
+  
         # Prepare the RGB images for each mask given their color (size [num_dets, h, w, 1])
-        # colors = torch.cat([get_color(j, on_gpu=img_gpu.device.index).view(1, 1, 1, 3) for j in range(num_dets_to_consider)], dim=0)
+        colors = torch.cat([get_color(j, on_gpu=img_gpu.device.index).view(1, 1, 1, 3) for j in range(num_dets_to_consider)], dim=0)
         masks_color = masks.repeat(1, 1, 1, 3) * colors * mask_alpha
 
         # This is 1 everywhere except for 1-mask_alpha where the mask is
@@ -211,6 +209,10 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
 
         img_gpu = img_gpu * inv_alph_masks.prod(dim=0) + masks_color_summand
     
+      else:
+        img_gpu *= 0.0
+        
+        
     if args.display_fps:
             # Draw the box for the fps on the GPU
         font_face = cv2.FONT_HERSHEY_DUPLEX
