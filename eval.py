@@ -607,8 +607,7 @@ def evalimage(net:Yolact, path:str, save_path:str=None):
         plt.title(path)
         plt.show()
     else:
-       # cv2.imwrite(save_path, img_numpy)
-        plt.imshow(img_numpy)
+        cv2.imwrite(save_path, img_numpy)
         
 def evalimages(net:Yolact, input_folder:str, output_folder:str):
     if not os.path.exists(output_folder):
