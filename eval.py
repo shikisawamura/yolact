@@ -53,9 +53,9 @@ def parse_args(argv=None):
                         help='Whether compute NMS cross-class or per-class.')
     parser.add_argument('--display_masks', default=True, type=str2bool,
                         help='Whether or not to display masks over bounding boxes')
-    parser.add_argument('--display_bboxes', default=False, type=str2bool,
+    parser.add_argument('--display_bboxes', default=True, type=str2bool,
                         help='Whether or not to display bboxes around masks')
-    parser.add_argument('--display_text', default=False, type=str2bool,
+    parser.add_argument('--display_text', default=True, type=str2bool,
                         help='Whether or not to display text (class [score])')
     parser.add_argument('--display_scores', default=True, type=str2bool,
                         help='Whether or not to display scores in addition to classes')
