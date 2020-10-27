@@ -209,12 +209,12 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
                 img_numpy_aux = (img_gpu * 255).byte().cpu().numpy()
                 img_numpy_aux = cv2.cvtColor(img_numpy_aux, cv2.COLOR_BGR2GRAY)
 
-            if nzCount == -1:
-                nzCount = 0
-                img_numpy = img_numpy_aux
-            else:
-                if cv2.countNonZero(img_numpy_aux) > cv2.countNonZero(img_numpy):
-                    img_numpy = img_numpy_aux
+                if nzCount == -1:
+                  nzCount = 0
+                 img_numpy = img_numpy_aux
+                else:
+                    if cv2.countNonZero(img_numpy_aux) > cv2.countNonZero(img_numpy):
+                        img_numpy = img_numpy_aux
 
         img_gpu = (masks.sum(dim=0) >= 1).float().expand(-1, -1, 3).contiguous()
     else:
