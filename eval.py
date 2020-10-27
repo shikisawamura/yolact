@@ -192,7 +192,7 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
         img_gpu = (masks.sum(dim=0) >= 1).float().expand(-1, -1, 3).contiguous()
                 
     else:
-        img_gpu *= 0.5
+        img_gpu *= 1.0
         #img_gpu = [0.0, 1.0, 0.0, 1.0]
         
         
