@@ -233,7 +233,7 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
 
     # Then draw the stuff that needs to be done on the cpu
     # Note, make sure this is a uint8 tensor or opencv will not anti alias text for whatever reason
-    #img_numpy = (img_gpu * 255).byte().cpu().numpy()
+    img_numpy = (img_gpu * 255).byte().cpu().numpy()
 
     if args.display_fps:
         # Draw the text on the CPU
