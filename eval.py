@@ -192,7 +192,7 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
       #  img_gpu = (masks.sum(dim=0) >= 1).float().expand(-1, -1, 3).contiguous()
        
     #https://github.com/dbolya/yolact/issues/401
-    `if args.display_masks and cfg.eval_mask_branch and num_dets_to_consider > 0:
+    if args.display_masks and cfg.eval_mask_branch and num_dets_to_consider > 0:
     masks = masks[:num_dets_to_consider, :, :, None]
     nzCount = -1
     for i in range(num_dets_to_consider):
