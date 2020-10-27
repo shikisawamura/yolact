@@ -198,16 +198,16 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
    
 
     if args.display_masks and cfg.eval_mask_branch and num_dets_to_consider > 0:
-    masks = masks[:num_dets_to_consider, :, :, None]
-    nzCount = -1
-    for i in range(num_dets_to_consider):
-        temp_class_check = cfg.dataset.class_names[classes[i]]
-        if temp_class_check == 'person':
-            msk = masks[i, :, :, None]
-            mask = msk.view(1, masks.shape[1], masks.shape[2], masks.shape[3])
-            img_gpu = (mask.sum(dim=0) >= 1).float().expand(-1, -1, 3).contiguous()
-            img_numpy_aux = (img_gpu * 255).byte().cpu().numpy()
-            img_numpy_aux = cv2.cvtColor(img_numpy_aux, cv2.COLOR_BGR2GRAY)
+        masks = masks[:num_dets_to_consider, :, :, None]
+        nzCount = -1
+        for i in range(num_dets_to_consider):
+            temp_class_check = cfg.dataset.class_names[classes[i]]
+            if temp_class_check == 'person':
+                msk = masks[i, :, :, None]
+                mask = msk.view(1, masks.shape[1], masks.shape[2], masks.shape[3])
+                img_gpu = (mask.sum(dim=0) >= 1).float().expand(-1, -1, 3).contiguous()
+                img_numpy_aux = (img_gpu * 255).byte().cpu().numpy()
+                img_numpy_aux = cv2.cvtColor(img_numpy_aux, cv2.COLOR_BGR2GRAY)
 
             if nzCount == -1:
                 nzCount = 0
