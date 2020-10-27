@@ -189,12 +189,11 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
     if args.display_masks and cfg.eval_mask_branch and num_dets_to_consider > 0:
         # After this, mask is of size [num_dets, h, w, 1]
         masks = masks[:num_dets_to_consider, :, :, None]
-        #img_gpu = (masks.sum(dim=0) >= 1).float().expand(-1, -1, 3).contiguous()
-        img_gpu *= 0.5
-        
+        img_gpu = (masks.sum(dim=0) >= 1).float().expand(-1, -1, 3).contiguous()
+                
     else:
-        #img_gpu *= 0
-        img_gpu = [0.0, 1.0, 0.0, 1.0]
+        img_gpu *= 0.5
+        #img_gpu = [0.0, 1.0, 0.0, 1.0]
         
         
         # Prepare the RGB images for each mask given their color (size [num_dets, h, w, 1])
