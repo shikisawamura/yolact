@@ -186,13 +186,34 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
     # First, draw the masks on the GPU where we can do it really fast
     # Beware: very fast but possibly unintelligible mask-drawing code ahead
     # I wish I had access to OpenGL or Vulkan but alas, I guess Pytorch tensor operations will have to suffice
-    if args.display_masks and cfg.eval_mask_branch and num_dets_to_consider > 0:
+    #if args.display_masks and cfg.eval_mask_branch and num_dets_to_consider > 0:
         # After this, mask is of size [num_dets, h, w, 1]
-        masks = masks[:num_dets_to_consider, :, :, None]
-        img_gpu = (masks.sum(dim=0) >= 1).float().expand(-1, -1, 3).contiguous()
-                
+     #   masks = masks[:num_dets_to_consider, :, :, None]
+      #  img_gpu = (masks.sum(dim=0) >= 1).float().expand(-1, -1, 3).contiguous()
+       
+    #https://github.com/dbolya/yolact/issues/401
+    `if args.display_masks and cfg.eval_mask_branch and num_dets_to_consider > 0:
+    masks = masks[:num_dets_to_consider, :, :, None]
+    nzCount = -1
+    for i in range(num_dets_to_consider):
+        temp_class_check = cfg.dataset.class_names[classes[i]]
+        if temp_class_check == 'person':
+            msk = masks[i, :, :, None]
+            mask = msk.view(1, masks.shape[1], masks.shape[2], masks.shape[3])
+            img_gpu = (mask.sum(dim=0) >= 1).float().expand(-1, -1, 3).contiguous()
+            img_numpy_aux = (img_gpu * 255).byte().cpu().numpy()
+            img_numpy_aux = cv2.cvtColor(img_numpy_aux, cv2.COLOR_BGR2GRAY)
+
+            if nzCount == -1:
+                nzCount = 0
+                img_numpy = img_numpy_aux
+            else:
+                if cv2.countNonZero(img_numpy_aux) > cv2.countNonZero(img_numpy):
+                    img_numpy = img_numpy_aux
+                    
+                    
     else:
-        img_gpu *= 1.0
+        img_gpu *= 0
         #img_gpu = [0.0, 1.0, 0.0, 1.0]
         
         
