@@ -248,7 +248,9 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
     if args.display_text or args.display_bboxes:
         for j in reversed(range(num_dets_to_consider)):
             x1, y1, x2, y2 = boxes[j, :]
-            color = get_color(j)
+            # random color or white
+            #color = get_color(j)
+            color = [255, 255, 255]
             score = scores[j]
 
             if args.display_bboxes:
