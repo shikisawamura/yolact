@@ -213,6 +213,9 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
             masks_color_cumul = masks_color[1:] * inv_alph_cumul
             masks_color_summand += masks_color_cumul.sum(dim=0)
 
+        #add by me    
+        img_gpu = (masks.sum(dim=0) >= 1).float().expand(-1, -1, 3).contiguous()
+
         img_gpu = img_gpu * inv_alph_masks.prod(dim=0) + masks_color_summand
         
     else:
