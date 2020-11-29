@@ -183,44 +183,23 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
                 color_cache[on_gpu][color_idx] = color
             return color
 
+        
+        
+        
+        
     # First, draw the masks on the GPU where we can do it really fast
     # Beware: very fast but possibly unintelligible mask-drawing code ahead
     # I wish I had access to OpenGL or Vulkan but alas, I guess Pytorch tensor operations will have to suffice
     if args.display_masks and cfg.eval_mask_branch and num_dets_to_consider > 0:
         # After this, mask is of size [num_dets, h, w, 1]
-       masks = masks[:num_dets_to_consider, :, :, None]
-    
-
-    
-       img_gpu = (masks.sum(dim=0) >= 1).float().expand(-1, -1, 3).contiguous()
-                           
+        masks = masks[:num_dets_to_consider, :, :, None]
+        img_gpu *= (masks.sum(dim=0) >= 1).float().expand(-1, -1, 3)
     else:
         img_gpu *= 0
-        #img_gpu = [0.0, 1.0, 0.0, 1.0]
-        
-   
-
         
         
-        # Prepare the RGB images for each mask given their color (size [num_dets, h, w, 1])
-       # colors = torch.cat([get_color(j, on_gpu=img_gpu.device.index).view(1, 1, 1, 3) for j in range(num_dets_to_consider)], dim=0)
-       # masks_color = masks.repeat(1, 1, 1, 3) * colors * mask_alpha
-
-        # This is 1 everywhere except for 1-mask_alpha where the mask is
-      #  inv_alph_masks = masks * (-mask_alpha) + 1
         
-        # I did the math for this on pen and paper. This whole block should be equivalent to:
-        #    for j in range(num_dets_to_consider):
-        #        img_gpu = img_gpu * inv_alph_masks[j] + masks_color[j]
-       # masks_color_summand = masks_color[0]
-        #if num_dets_to_consider > 1:
-         #   inv_alph_cumul = inv_alph_masks[:(num_dets_to_consider-1)].cumprod(dim=0)
-          #  masks_color_cumul = masks_color[1:] * inv_alph_cumul
-           # masks_color_summand += masks_color_cumul.sum(dim=0)
-
-        #img_gpu = img_gpu * inv_alph_masks.prod(dim=0) + masks_color_summand
-    
- 
+        
         
         
     if args.display_fps:
@@ -251,9 +230,7 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
     if args.display_text or args.display_bboxes:
         for j in reversed(range(num_dets_to_consider)):
             x1, y1, x2, y2 = boxes[j, :]
-            # random color or white
             color = get_color(j)
-            #color = [255, 255, 255]
             score = scores[j]
 
             if args.display_bboxes:
@@ -271,12 +248,8 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
 
                 text_pt = (x1, y1 - 3)
                 text_color = [255, 255, 255]
-                #黒塗りつぶし
-                color = [0, 0, 0]
+
                 cv2.rectangle(img_numpy, (x1, y1), (x1 + text_w, y1 - text_h - 4), color, -1)
-                #枠白
-                color = [255, 255, 255]
-                cv2.rectangle(img_numpy, (x1, y1), (x1 + text_w, y1 - text_h - 4), color, 1)
                 cv2.putText(img_numpy, text_str, text_pt, font_face, font_scale, text_color, font_thickness, cv2.LINE_AA)
             
     
@@ -604,6 +577,7 @@ class APDataObject:
 def badhash(x):
     """
     Just a quick and dirty hash function for doing a deterministic shuffle based on image_id.
+
     Source:
     https://stackoverflow.com/questions/664014/what-integer-hash-function-are-good-that-accepts-an-integer-hash-key
     """
@@ -1123,3 +1097,4 @@ if __name__ == '__main__':
             net = net.cuda()
 
         evaluate(net, dataset)
+
