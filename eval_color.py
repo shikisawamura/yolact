@@ -194,6 +194,8 @@ def prep_display(dets_out, img, h, w, undo_transform=True, class_color=False, ma
         # After this, mask is of size [num_dets, h, w, 1]
         masks = masks[:num_dets_to_consider, :, :, None]
         img_gpu *= (masks.sum(dim=0) >= 1).float().expand(-1, -1, 3)
+        img_gpu = (masks.sum(dim=0) >= 1).float().expand(-1, -1, 3).contiguous()
+
     else:
         img_gpu *= 0
         
